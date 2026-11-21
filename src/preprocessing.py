@@ -1,0 +1,1 @@
+"""Az SQL adatbázisból lekérdezett DataFrame-ek előkészítése az elemzéshez és a gépi tanuláshoz."""
