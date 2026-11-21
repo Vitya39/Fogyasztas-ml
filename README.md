@@ -1,4 +1,11 @@
 # Fogyasztas-ml
 NJE Haladó programozás gyakorlati beadandó
 
-Készítette: Kiss Ádám, Nagy Viktor
+Feladatkiosztás:
+- Kiss Ádám
+  - Adatbeolvasás, adatbázis-kezelés
+  - UI
+- Nagy Viktor
+  - Adattisztítás
+  - Gépi tanulás implementálása
+  - Adatvizualizáció
