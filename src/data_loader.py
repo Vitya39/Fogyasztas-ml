@@ -1,7 +1,11 @@
-""".xls fájlok beolvasása - beolvassa a Power.xls és Energy Usage.xls fájlokat, normalizálja az adatokat, és `LoadedSheet` objektumokat hoz létre, ami továbbítható az `EnergyDatabase` osztálynak a rekordok betöltéséhez.
+"""
+.xls fájlok beolvasása - beolvassa a Power.xls és Energy Usage.xls
+fájlokat, normalizálja az adatokat, és `LoadedSheet` objektumokat hoz
+létre, ami továbbítható az `EnergyDatabase` osztálynak a rekordok
+betöltéséhez.
 
-tesztparancs (létrehozza az adatbázist és betölti az adatokat): py -c "from src.data_loader import load_raw_exports; from src.database import EnergyDatabase; db = EnergyDatabase(); db.initialize(); sheets = load_raw_exports(); print(db.upsert_loaded_sheets(sheets))"
-
+tesztparancs (létrehozza az adatbázist és betölti az adatokat):
+py -c "from src.data_loader import load_raw_exports; from src.database import EnergyDatabase; db = EnergyDatabase(); db.initialize(); sheets = load_raw_exports(); print(db.upsert_loaded_sheets(sheets))"
 """
 
 from __future__ import annotations
@@ -16,8 +20,6 @@ import pandas as pd
 
 @dataclass(frozen=True)
 class LoadedSheet:
-   
-
     table_name: str
     value_column: str
     records: list[tuple[str, int | float]]
@@ -27,8 +29,6 @@ class LoadedSheet:
 
 @dataclass(frozen=True)
 class _SheetMapping:
-   
-
     sheet_name: str
     table_name: str
     value_column: str
@@ -36,12 +36,12 @@ class _SheetMapping:
 
 
 def _cast_int_power(value: Any) -> int:
-   
+
     return int(round(float(value)))
 
 
 def _cast_float_energy(value: Any) -> float:
-   
+
     return float(value)
 
 
@@ -83,15 +83,16 @@ ENERGY_SHEET_MAPPINGS: tuple[_SheetMapping, ...] = (
 
 
 class ExcelLoader:
-   
     def __init__(self, engine: str = "xlrd") -> None:
-        
+
         self.engine = engine
 
     def _read_raw_sheet(self, file_path: Path, sheet_name: str) -> pd.DataFrame:
-        
+
         if not file_path.exists():
-            raise FileNotFoundError(f"A bemeneti `.xls` fájl nem található: {file_path}")
+            raise FileNotFoundError(
+                f"A bemeneti `.xls` fájl nem található: {file_path}"
+            )
 
         try:
             df = pd.read_excel(file_path, sheet_name=sheet_name, engine=self.engine)
@@ -108,7 +109,7 @@ class ExcelLoader:
         value_column: str,
         caster: Callable[[Any], int | float],
     ) -> list[tuple[str, int | float]]:
-        
+
         if df.shape[1] < 2:
             raise ValueError(
                 f"Legalább 2 oszlopra van szükség (időintervallum és érték), "
@@ -135,7 +136,7 @@ class ExcelLoader:
         file_path: str | Path,
         mappings: tuple[_SheetMapping, ...],
     ) -> dict[str, LoadedSheet]:
-        
+
         resolved_path = Path(file_path)
         loaded: dict[str, LoadedSheet] = {}
 
@@ -161,7 +162,7 @@ def load_power_xls(
     file_path: str | Path = Path("data/raw/Power.xls"),
     loader: ExcelLoader | None = None,
 ) -> dict[str, LoadedSheet]:
-    
+
     active_loader = loader if loader is not None else ExcelLoader()
     return active_loader.load_workbook_sheets(file_path, POWER_SHEET_MAPPINGS)
 
@@ -170,7 +171,7 @@ def load_energy_usage_xls(
     file_path: str | Path = Path("data/raw/Energy Usage.xls"),
     loader: ExcelLoader | None = None,
 ) -> dict[str, LoadedSheet]:
-    
+
     active_loader = loader if loader is not None else ExcelLoader()
     return active_loader.load_workbook_sheets(file_path, ENERGY_SHEET_MAPPINGS)
 
@@ -180,7 +181,7 @@ def load_raw_exports(
     power_filename: str = "Power.xls",
     energy_filename: str = "Energy Usage.xls",
 ) -> dict[str, LoadedSheet]:
-    
+
     base_dir = Path(raw_dir)
     loader = ExcelLoader()
 
